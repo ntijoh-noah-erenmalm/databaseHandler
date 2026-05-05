@@ -23,20 +23,33 @@ func NewTree(degree int) Tree {
 
 func AddKey(value int, tree *Tree) {
 
+	if tree.Root == nil {
+      tree.Root = &Node{
+          Keys:   []Key{{Value: value}},
+          IsLeaf: true,
+      }
+        return
+    }
+
+
 	currentNode := tree.Root
-	//make logic to find right node
+	//1. make logic to find right node
 	
-	//if full make balance change
+	//2. if full make balance change
+	if len(currentNode.Keys) >=tree.Degree-1 {
+		// split the node, then insert
+		return
+	}
 
 
+	//3. insert at right index
 	index := findNodeIndex(value, currentNode.Keys)
-	//insert at right index
 	currentNode.Keys = append(currentNode.Keys, Key{}) //append empty key to current keys
-	copy(currentNode.Keys[index+1], currentNode.Keys[index:])
+	copy(currentNode.Keys[index+1:], currentNode.Keys[index:])
 	currentNode.Keys[index] = Key{Value: value}
 
 
-	//balance children
+	//4. balance children
 }
 
 func findNodeIndex(value int, keys []Key) int {

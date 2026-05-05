@@ -2,7 +2,8 @@ package tests
 
 import (
     "testing"
-		"databaseHandler/tree"  // replace with your actual module name
+		"databaseHandler/tree"  
+		"databaseHandler/invariant"
 )
 
 func TestNewTree(t *testing.T) {
@@ -14,4 +15,14 @@ func TestNewTree(t *testing.T) {
     if tree.Degree != 3 {
         t.Errorf("expected degree 3, got %d", tree.Degree)
     }
+}
+
+func TestInsert(t *testing.T) {
+
+	tr := tree.NewTree(7)
+	tree.AddKey(5, &tr)
+	tree.AddKey(3, &tr)
+	tree.AddKey(7, &tr)
+	tree.AddKey(8, &tr)
+	invariant.CheckInvariants(t, &tr)	
 }
