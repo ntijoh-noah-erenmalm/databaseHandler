@@ -32,23 +32,19 @@ func AddKey(value int, tree *Tree) {
     }
 
 	//1. make logic to find right node
-	currentNode := findNode(value, tree.Root)
-	
-	//2. if full make balance change
-	if len(currentNode.Keys) >=tree.Degree-1 {
-		// split the node, then insert
-		return
-	}
+	currentNode := findInsertNode(value, tree.Root)
 
-
-	//3. insert at right index
+	//2. insert at right index
 	index := findNodeIndex(value, currentNode.Keys)
 	currentNode.Keys = append(currentNode.Keys, Key{}) //append empty key to current keys
 	copy(currentNode.Keys[index+1:], currentNode.Keys[index:])
 	currentNode.Keys[index] = Key{Value: value}
 
+	//3. balance children
+	if len(currentNode.Keys) >=tree.Degree-1 {
+			// split the node, then insert
 
-	//4. balance children
+	}
 }
 
 func findNodeIndex(value int, keys []Key) int {
@@ -60,7 +56,7 @@ func findNodeIndex(value int, keys []Key) int {
 	return len(keys)
 }
 
-func findNode(value int, node *Node) *Node {
+func findInsertNode(value int, node *Node) *Node {
 
 	if node.IsLeaf {
 		return node
@@ -69,10 +65,12 @@ func findNode(value int, node *Node) *Node {
 	for i := 0 ; i < len(node.Keys); i++ {
 		
 		if value < node.Keys[i].Value {
-			return findNode(value, node.Children[i])
+			return findInsertNode(value, node.Children[i])
 		}
 	}				
-	return findNode(value, node.Children[len(node.Children)-1])
+	return findInsertNode(value, node.Children[len(node.Children)-1])
 }
 
+func balanceNode(node *Node) {
 
+}
