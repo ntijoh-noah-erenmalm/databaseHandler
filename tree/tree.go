@@ -31,9 +31,8 @@ func AddKey(value int, tree *Tree) {
         return
     }
 
-
-	currentNode := tree.Root
 	//1. make logic to find right node
+	currentNode := findNode(value, tree.Root)
 	
 	//2. if full make balance change
 	if len(currentNode.Keys) >=tree.Degree-1 {
@@ -60,3 +59,20 @@ func findNodeIndex(value int, keys []Key) int {
 	}
 	return len(keys)
 }
+
+func findNode(value int, node *Node) *Node {
+
+	if node.IsLeaf {
+		return node
+	}
+
+	for i := 0 ; i < len(node.Keys); i++ {
+		
+		if value < node.Keys[i].Value {
+			return findNode(value, node.Children[i])
+		}
+	}				
+	return findNode(value, node.Children[len(node.Children)-1])
+}
+
+
