@@ -125,3 +125,22 @@ func balance(tree *Tree, node *Node) {
 		balance(tree, parent)
 	}
 }
+
+func Search(value int, node *Node) *Key {
+
+	for i := 0; i < len(node.Keys); i++ {
+		keyValue := node.Keys[i].Value
+		if value == keyValue  {
+			return &node.Keys[i]
+		}
+
+		if value < keyValue && !node.IsLeaf {
+			return Search(value, node.Children[i])
+		}
+	}
+	if !node.IsLeaf {
+		return Search(value, node.Children[len(node.Children)-1])
+	}
+
+	return nil
+}
