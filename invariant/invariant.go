@@ -3,7 +3,6 @@ package invariant
 import (
 	"testing"
 	"databaseHandler/tree"
-
 )
 
 func CheckInvariants(t *testing.T, tr *tree.Tree) {
