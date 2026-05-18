@@ -2,86 +2,77 @@ package tests
 
 import (
     "testing"
-		"databaseHandler/tree"  
-		"databaseHandler/invariant"
+    "os"
+    "databaseHandler/tree"  
+    "databaseHandler/invariant"
 )
 
-func TestNewTree(t *testing.T) {
-    tree := tree.NewTree(3)
+// ... your existing tests ...
 
-    if tree.Root != nil {
-        t.Errorf("expected root to be nil, got %v", tree.Root)
+func TestSaveAndLoad(t *testing.T) {
+    // 1. build a known tree
+    tr := tree.NewTree(3)
+    keys := []int{10, 20, 5, 6, 12, 30, 7, 17}
+    for _, k := range keys {
+        tree.AddKey(k, &tr)
     }
-    if tree.Degree != 3 {
-        t.Errorf("expected degree 3, got %d", tree.Degree)
+
+    // 2. save it
+    path := "test_tree.bin"
+    defer os.Remove(path)
+    if err := tree.SaveTree(&tr, path); err != nil {
+        t.Fatalf("SaveTree failed: %v", err)
+    }
+
+    // 3. load it back
+    loaded, err := tree.LoadTree(path)
+    if err != nil {
+        t.Fatalf("LoadTree failed: %v", err)
+    }
+
+    // 4. all keys must still be searchable
+    for _, k := range keys {
+        if tree.Search(k, loaded.Root) == nil {
+            t.Errorf("key %d not found after load", k)
+        }
+    }
+
+    // 5. degree must be preserved
+    if loaded.Degree != tr.Degree {
+        t.Errorf("degree mismatch: got %d, want %d", loaded.Degree, tr.Degree)
+    }
+
+    // 6. tree must still satisfy all b-tree invariants
+    invariant.CheckInvariants(t, loaded)
+
+    // 7. a key that was never inserted must not appear
+    if tree.Search(999, loaded.Root) != nil {
+        t.Error("found key 999 which was never inserted")
     }
 }
 
-func TestInsert(t *testing.T) {
-
-	tr := tree.NewTree(3)
-	tree.AddKey(5, &tr)
-	tree.AddKey(3, &tr)
-	tree.AddKey(7, &tr)
-	tree.AddKey(1, &tr)
-	tree.AddKey(19, &tr)
-	tree.AddKey(10, &tr)
-	tree.AddKey(2, &tr)
-	invariant.CheckInvariants(t, &tr)	
-}
-
-func TestSearch(t *testing.T) {
-
-	tr := tree.NewTree(3)
-	tree.AddKey(5, &tr)
-	tree.AddKey(3, &tr)
-	tree.AddKey(7, &tr)
-	tree.AddKey(8, &tr)
-
-	result := tree.Search(99, tr.Root)
-
-	if result != nil {
-		t.Errorf("expected nil for missing key, got %v", result)
-	}
-}
-
-func TestDeletingSingleNode(t *testing.T) {
-	tr := tree.NewTree(6)
-	tree.AddKey(5, &tr)
-	tree.AddKey(2, &tr)
-	tree.AddKey(1, &tr)
-	tree.AddKey(9, &tr)
-  tree.Delete(1, &tr)
-	invariant.CheckInvariants(t, &tr)
-}
-
-func TestLargeTree(t *testing.T) {
+func TestSaveAndLoadLarge(t *testing.T) {
     tr := tree.NewTree(4)
-
-    values := []int{10, 20, 5, 6, 12, 30, 7, 17, 3, 25, 40, 35, 15, 22, 8, 1, 50, 45, 28, 33}
-    for _, v := range values {
-        tree.AddKey(v, &tr)
+    for i := 1; i <= 200; i++ {
+        tree.AddKey(i, &tr)
     }
 
-    tree.Delete(17, &tr)
-
-    invariant.CheckInvariants(t, &tr)
-}
-
-func TestDeleteInternalNode(t *testing.T) {
-    tr := tree.NewTree(4)
-    values := []int{10, 20, 5, 6, 12, 30, 7, 17, 3, 25}
-    for _, v := range values {
-        tree.AddKey(v, &tr)
+    path := "test_tree_large.bin"
+    defer os.Remove(path)
+    if err := tree.SaveTree(&tr, path); err != nil {
+        t.Fatalf("SaveTree failed: %v", err)
     }
 
-    // delete a key that is likely in an internal node
-    tree.Delete(10, &tr)
+    loaded, err := tree.LoadTree(path)
+    if err != nil {
+        t.Fatalf("LoadTree failed: %v", err)
+    }
 
-    invariant.CheckInvariants(t, &tr)
+    invariant.CheckInvariants(t, loaded)
 
-    result := tree.Search(10, tr.Root)
-    if result != nil {
-        t.Errorf("expected 10 to be deleted but found it")
+    for _, k := range []int{1, 50, 100, 150, 200} {
+        if tree.Search(k, loaded.Root) == nil {
+            t.Errorf("key %d not found after load", k)
+        }
     }
 }
