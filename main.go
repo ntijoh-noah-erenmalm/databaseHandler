@@ -1,11 +1,10 @@
 package main
 
 import (
-    "fmt"
-    "databaseHandler/tree"
+		"databaseHandler/cli"
 )
 
 func main() {
-    tr := tree.NewTree(3)
-    fmt.Println(tr)
+	
+	cli.StartLoop()
 }
