@@ -1,14 +1,16 @@
-package cli 
+package cli
 
 import (
 	"bufio"
+	"databaseHandler/catalog"
+	"databaseHandler/storage"
+	"databaseHandler/tree"
 	"fmt"
 	"os"
 	"strings"
-	"databaseHandler/catalog"
 )
 
-func StartLoop() {
+func StartLoop(s *storage.Storage, t *tree.Tree) {
 	scanner := bufio.NewScanner(os.Stdin)
 	fmt.Println("cli ready to use")
 
@@ -43,6 +45,10 @@ func StartLoop() {
 									}
 							}
 					}
+		case "insert":
+			InsertEntry(parts, s, t)	
+		case "select":
+			SelectEntry(parts, s, t)
 		default:
 			fmt.Println("unknown, command:", parts[0])
 		}
