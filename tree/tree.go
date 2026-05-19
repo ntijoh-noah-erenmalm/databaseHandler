@@ -9,6 +9,8 @@ type Node struct {
 
 type Key struct {
 	Value int
+	Offset int64
+	Size int
 }
 
 type Tree struct {
@@ -21,11 +23,11 @@ func NewTree(degree int) Tree {
 	return Tree{Root: nil, Degree: degree}
 }
 
-func AddKey(value int, tree *Tree) {
+func AddKey(value int, offset int64, size int, tree *Tree) {
 
 	if tree.Root == nil {
       tree.Root = &Node{
-          Keys:   []Key{{Value: value}},
+          Keys:   []Key{{Value: value, Offset: offset, Size: size}},
           IsLeaf: true,
       }
         return
@@ -42,7 +44,7 @@ func AddKey(value int, tree *Tree) {
 	index := findInsertionNodeIndex(value, currentNode.Keys)
 	currentNode.Keys = append(currentNode.Keys, Key{}) //append empty key to current keys
 	copy(currentNode.Keys[index+1:], currentNode.Keys[index:])
-	currentNode.Keys[index] = Key{Value: value}
+	currentNode.Keys[index] = Key{Value: value, Offset: offset, Size: size}
 
 	//3. balance children
 	if len(currentNode.Keys) >=tree.Degree {

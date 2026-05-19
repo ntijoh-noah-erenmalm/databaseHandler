@@ -17,3 +17,7 @@ database handler made for exam work. Wont contain every feature of a normal data
 - Command to "vacuum" dead space, defragment space used.
 #
 - catalog for table column data(types and names)
+
+#
+SELECT * FROM users WHERE id = 1
+insert into tableName values (x, x...)
