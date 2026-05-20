@@ -38,4 +38,5 @@ ax.set_zlabel("search time (ns)")
 ax.set_ylabel("rows")
 ax.set_title("B-tree search performance")
 
+print(df)
 plt.show()
