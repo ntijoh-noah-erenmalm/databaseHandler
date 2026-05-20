@@ -1,13 +1,14 @@
 package seeder
 
 import (
-    "databaseHandler/catalog"
-    "databaseHandler/storage"
-    "databaseHandler/tree"
-    "math/rand"
-    "strconv"
-    "time"
-		"fmt"
+	"databaseHandler/catalog"
+	"databaseHandler/storage"
+	"databaseHandler/tree"
+	"fmt"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
 )
 
 type SeederConfig struct {
@@ -24,8 +25,17 @@ type BenchmarkConfig struct {
 }
 
 func RunBenchmark(config BenchmarkConfig) {
+
+		file, _ := os.Create("benchmark_results.txt")
+		defer file.Close()
+
+		fmt.Fprintln(file, "degree,rows,insert_ms,search_target,search_ns")
+
     for _, degree := range config.Degrees {
         for _, rows := range config.RowCounts {
+
+						os.Remove("data.db")
+						os.Remove("catalog.json")
             s, _ := storage.NewStorage()
             tr := tree.NewTree(degree)
 
@@ -43,17 +53,24 @@ func RunBenchmark(config BenchmarkConfig) {
                 rand.Intn(rows),
             }
 
-            fmt.Printf("\ndegree=%d rows=%d insert=%v\n", degree, rows, insertDuration)
             for _, target := range searchTargets {
                 start := time.Now()
                 tree.Search(target, tr.Root)
                 searchDuration := time.Since(start)
-                fmt.Printf("  search target=%d duration=%v\n", target, searchDuration)
+
+                fmt.Fprintf(file, "%d,%d,%d,%d,%d\n",
+                    degree,
+                    rows,
+                    insertDuration.Milliseconds(),
+                    target,
+                    searchDuration.Nanoseconds(),
+                )
             }
 
             s.Close()
         }
     }
+		fmt.Println("benchmark done :D")
 }
 
 func Seed(config SeederConfig, s *storage.Storage, t *tree.Tree) time.Duration {

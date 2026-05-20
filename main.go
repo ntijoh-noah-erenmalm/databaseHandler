@@ -10,12 +10,12 @@ import (
 )
 
 func main() {
-	mode := "cli"	
+	mode := "benchmark"	
 
 	if mode == "benchmark" {
 		seeder.RunBenchmark(seeder.BenchmarkConfig{
-				Degrees:   []int{3, 5, 10, 20},
-				RowCounts: []int{100, 1000, 10000},
+				Degrees:   []int{10, 25, 100, 200},
+				RowCounts: []int{100, 10000, 1000000},
 				TableName: "users",
 				Columns: []catalog.Column{
 						{Name: "name", Type: "string"},

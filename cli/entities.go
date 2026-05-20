@@ -98,7 +98,6 @@ func SelectEntry(command []string, s *storage.Storage, t *tree.Tree) {
 
 	id,_ := strconv.Atoi(command[7])
 
-
 	key := tree.Search(id, t.Root)
 	if key == nil {
 		fmt.Println("record not ofund")
