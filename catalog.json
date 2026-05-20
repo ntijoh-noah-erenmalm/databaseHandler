@@ -1,1 +1,1 @@
-{"tables":[{"Name":"meow","Columns":[{"Name":"id","Type":"int"},{"Name":"email","Type":"string"}],"NextID":3},{"Name":"users","Columns":[{"Name":"id","Type":"int"},{"Name":"name","Type":"string"},{"Name":"age","Type":"int"}],"NextID":88800}]}
+{"tables":[{"Name":"users","Columns":[{"Name":"id","Type":"int"},{"Name":"name","Type":"string"},{"Name":"age","Type":"int"}],"NextID":4069333}]}
